@@ -1,0 +1,35 @@
+<%= render 'govuk_publishing_components/components/title', title: "Example pages rendered by finder-frontend" %>
+
+<%= render 'govuk_publishing_components/components/lead_paragraph',
+  text: "This is the root of the finder-frontend application.
+  This page is intended to be shown in development and on Heroku review apps.
+  It won't be shown to users on GOV.UK because there are no routes to it." %>
+
+<%= render "govuk_publishing_components/components/heading", text: "Useful links" %>
+
+<%= render "govuk_publishing_components/components/contents_list", {
+    hide_title: true,
+    underline_links: true,
+    contents: [
+      {
+        text: "Finder-frontend in GOV.UK developer docs",
+        href: "https://docs.publishing.service.gov.uk/apps/finder-frontend.html"
+      },
+      {
+        text: "Github repo",
+        href: "https://github.com/alphagov/finder-frontend"
+      }
+    ]
+} %>
+
+<% examples_by_doc_type.each do |doc_type, examples| %>
+
+<%= render "govuk_publishing_components/components/heading", text: "#{doc_type.capitalize.pluralize} by most visited (#{examples.count})" %>
+
+<%= render "govuk_publishing_components/components/contents_list", {
+    hide_title: true,
+    underline_links: true,
+    contents: examples
+} %>
+
+<% end %>

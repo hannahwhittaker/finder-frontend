@@ -32,4 +32,6 @@ FinderFrontend::Application.routes.draw do
   get '/redirect/statistics/announcements' => 'redirection#upcoming_statistics'
 
   get '/*slug' => 'finders#show', as: :finder
+
+  root to: 'home#index'
 end
