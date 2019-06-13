@@ -8,18 +8,6 @@
     "combine_mode": "or",
     "email_filter_facets": [
       {
-        "facet_id": "facet_groups",
-        "facet_name": "Facet_groups",
-        "facet_choices": [
-          {
-            "key": "52435175-82ed-4a04-adef-74c0199d0f46",
-            "radio_button_name": "52435175-82ed-4a04-adef-74c0199d0f46",
-            "topic_name": "appear in find eu exit guidance business finder",
-            "prechecked": true
-          }
-        ]
-      },
-      {
         "facet_id": "sector_business_area",
         "facet_name": "Sector / Business area",
         "facet_choices": [

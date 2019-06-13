@@ -38,6 +38,8 @@ private
     options = { "title" => subscriber_list_title }
     options["combine_mode"] = combine_mode if combine_mode
     if facet_groups?
+      options["links"] = facet_groups
+    elsif facet_values?
       options["links"] = tags
     else
       options["tags"] = tags
@@ -47,6 +49,20 @@ private
 
   def facet_groups?
     facets.any? { |facet| facet["facet_id"] == "facet_groups" }
+  end
+
+  def facet_groups
+    facet_groups = facets.map do |facet|
+      facet["facet_choices"].map do |facet_choice|
+        facet_choice["key"]
+      end
+    end
+
+    { "facet_groups" => { any: facet_groups.flatten } }
+  end
+
+  def facet_values?
+    facets.any? { |facet| facet["facet_id"] == "facet_values" }
   end
 
   def tags
