@@ -211,7 +211,7 @@ describe EmailAlertSubscriptionsController, type: :controller do
         content_store_has_item('/find-eu-exit-guidance-business/email-signup', signup_finder)
         email_alert_api_has_subscriber_list(
           'links' => {
-            'sector_business_area' => { any: %w(aerospace) },
+            'facet_values' => { any: %w(aerospace) },
           },
           'subscription_url' => 'http://www.itstartshear.com',
           'combine_mode' => 'or'
