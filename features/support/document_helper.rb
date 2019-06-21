@@ -13,6 +13,14 @@ module DocumentHelper
 
   SEARCH_ENDPOINT = "#{Plek.current.find('search')}/search.json".freeze
 
+  def stub_business_finder_qa_config
+    allow_any_instance_of(QaController).to receive(:qa_config).and_return(business_finder_qa_config)
+  end
+
+  def business_finder_qa_config
+    @business_finder_qa_config ||= YAML.load_file('./features/fixtures/prepare_business_uk_leaving_eu.yaml')
+  end
+
   def stub_taxonomy_api_request
     content_store_has_item("/", "links" => { "level_one_taxons" => [] })
   end
