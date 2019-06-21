@@ -25,8 +25,8 @@ Feature: QA
       When I submit my answer
       Then my options are persisted as url params
 
-    Scenario: Answering a multiple option question
-      Given I am answering a multiple answer question
+    Scenario: Answering a multiple_grouped option question
+      Given I am answering a multiple_grouped answer question
       Then I should see a collection of checkboxes
       When I select multiple checkboxes
       When I submit my answer
