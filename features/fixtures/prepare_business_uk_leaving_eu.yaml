@@ -94,7 +94,7 @@ pages:
           - "clothing-consumer-goods"
           - "food-drink-tobacco"
           - "motor-trades"
-          - retail
+          - "retail"
       - name: "Tourism and hospitality"
         filters:
           - "accommodation"
