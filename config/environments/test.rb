@@ -14,4 +14,5 @@ FinderFrontend::Application.configure do
   config.action_dispatch.show_exceptions = false
   config.action_controller.allow_forgery_protection = false
   config.active_support.deprecation = :stderr
+  config.qa_config_path = "features/fixtures"
 end

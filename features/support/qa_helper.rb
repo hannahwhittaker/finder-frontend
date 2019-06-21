@@ -21,7 +21,7 @@ module QAHelper
   end
 
   def mock_bus_finder_qa_config
-    @mock_bus_finder_qa_config ||= YAML.load_file('./lib/prepare_business_uk_leaving_eu.yaml')
+    @mock_bus_finder_qa_config ||= YAML.load_file('./features/fixtures/prepare_business_uk_leaving_eu.yaml')
   end
 
   def first_question

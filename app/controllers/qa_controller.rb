@@ -13,7 +13,8 @@ class QaController < ApplicationController
 private
 
   def qa_config
-    @qa_config ||= YAML.load_file("lib/#{request.path.tr('-', '_')}.yaml")
+    qa_config_path = Rails.application.config.qa_config_path || "lib"
+    @qa_config ||= YAML.load_file("#{qa_config_path}/#{request.path.tr('-', '_')}.yaml")
   end
 
   def slug
