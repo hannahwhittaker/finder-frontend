@@ -95,6 +95,7 @@ private
   def finder_presenter
     @finder_presenter ||= FinderPresenter.new(
       content_item,
+      facets,
       search_results,
       filter_params,
     )
