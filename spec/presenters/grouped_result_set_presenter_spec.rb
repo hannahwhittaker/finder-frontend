@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe GroupedResultSetPresenter do
-  subject(:presenter) { GroupedResultSetPresenter.new(finder, filter_params, sort_presenter, metadata_presenter_class) }
+  subject(:presenter) { GroupedResultSetPresenter.new(finder_presenter, filter_params, sort_presenter, metadata_presenter_class) }
   let(:metadata_presenter_class) do
     MetadataPresenter
   end
@@ -21,7 +21,7 @@ RSpec.describe GroupedResultSetPresenter do
 
   let(:finder_name) { 'A finder' }
 
-  let(:finder) do
+  let(:finder_presenter) do
     double(
       FinderPresenter,
       slug: "/a-finder",
@@ -152,7 +152,7 @@ RSpec.describe GroupedResultSetPresenter do
   end
 
   before do
-    allow(finder).to receive(:eu_exit_finder?).and_return(false)
+    allow(finder_presenter).to receive(:eu_exit_finder?).and_return(false)
   end
 
   describe "#grouped_documents" do
@@ -191,15 +191,15 @@ RSpec.describe GroupedResultSetPresenter do
     }
 
     let(:primary_tagged_result) {
-      SearchResultPresenter.new(document: tagged_document, metadata_presenter_class: metadata_presenter_class, doc_index: 1, doc_count: 2, finder_name: finder_name, debug_score: false, highlight: false).document_list_component_data
+      SearchResultPresenter.new(document: tagged_document, metadata_presenter_class: metadata_presenter_class, doc_index: 1, doc_count: 2, finder_presenter: finder_presenter, debug_score: false, highlight: false).document_list_component_data
     }
 
     let(:primary_tagged_result_with_one_document) {
-      SearchResultPresenter.new(document: tagged_document, metadata_presenter_class: metadata_presenter_class, doc_index: 0, doc_count: 1, finder_name: finder_name, debug_score: false, highlight: false).document_list_component_data
+      SearchResultPresenter.new(document: tagged_document, metadata_presenter_class: metadata_presenter_class, doc_index: 0, doc_count: 1, finder_presenter: finder_presenter, debug_score: false, highlight: false).document_list_component_data
     }
 
     let(:document_result) {
-      SearchResultPresenter.new(document: document, metadata_presenter_class: metadata_presenter_class, doc_index: 0, doc_count: 2, finder_name: finder_name, debug_score: false, highlight: false).document_list_component_data
+      SearchResultPresenter.new(document: document, metadata_presenter_class: metadata_presenter_class, doc_index: 0, doc_count: 2, finder_presenter: finder_presenter, debug_score: false, highlight: false).document_list_component_data
     }
 
     context "when not grouping results" do
@@ -379,10 +379,8 @@ RSpec.describe GroupedResultSetPresenter do
     context "a finder does not sort by topic" do
       let(:filter_params) { {} }
       let(:sort_presenter) { sort_presenter_without_options }
-      before { allow(finder).to receive(:default_sort_option) }
+      before { allow(finder_presenter).to receive(:default_sort_option) }
       it "is false" do
-        # allow(finder).to receive(:sort_options).and_return(sort_presenter_without_options)
-
         expect(subject.grouped_display?).to be false
       end
     end
@@ -392,7 +390,6 @@ RSpec.describe GroupedResultSetPresenter do
       let(:sort_presenter) { sort_presenter_with_options }
 
       before do
-        # allow(finder).to receive(:sort_options).and_return(sort_presenter_with_options)
         allow(sort_presenter).to receive(:selected_option).and_return(topic_sort_option)
       end
       context "with no sort param" do
@@ -428,9 +425,9 @@ RSpec.describe GroupedResultSetPresenter do
   describe "#grouped_display?" do
     context "a finder does not sort by topic" do
       let(:filter_params) { {} }
-      before { allow(finder).to receive(:default_option) }
+      before { allow(finder_presenter).to receive(:default_option) }
       it "is false" do
-        allow(finder).to receive(:sort).and_return([])
+        allow(finder_presenter).to receive(:sort).and_return([])
 
         expect(subject.grouped_display?).to be false
       end

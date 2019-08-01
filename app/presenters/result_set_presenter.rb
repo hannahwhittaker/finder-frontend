@@ -35,7 +35,7 @@ class ResultSetPresenter
   def document_list_component_data
     @document_list_component_data ||= begin
       documents.each_with_index.map do |document, index|
-        SearchResultPresenter.new(document: document, metadata_presenter_class: metadata_presenter_class, doc_index: index, doc_count: documents.count, finder_name: finder_presenter.name, debug_score: debug_score, highlight: highlight(index)).document_list_component_data
+        SearchResultPresenter.new(document: document, metadata_presenter_class: metadata_presenter_class, doc_index: index, doc_count: documents.count, finder_presenter: finder_presenter, debug_score: debug_score, highlight: highlight(index)).document_list_component_data
       end
     end
   end

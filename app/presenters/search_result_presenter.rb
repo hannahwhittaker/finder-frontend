@@ -10,12 +10,13 @@ class SearchResultPresenter
            :es_score,
            to: :document
 
-  def initialize(document:, metadata_presenter_class:, doc_index:, doc_count:, finder_name:, debug_score:, highlight:)
+  def initialize(document:, metadata_presenter_class:, doc_index:, doc_count:, finder_presenter:, debug_score:, highlight:)
     @document = document
     @metadata = metadata_presenter_class.new(document.metadata).present
     @index = doc_index + 1
     @count = doc_count
-    @finder_name = finder_name
+    @finder_name = finder_presenter.name
+    @finder_presenter = finder_presenter
     @debug_score = debug_score
     @highlight = highlight
   end
