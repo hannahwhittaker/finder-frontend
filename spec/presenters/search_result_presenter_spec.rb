@@ -7,22 +7,12 @@ RSpec.describe SearchResultPresenter do
   let(:debug_score) { false }
   let(:highlight) { false }
 
-  let(:metadata_presenter_class) do
-    Class.new do
-      attr_reader :raw_metadata
-      def initialize(raw_metadata)
-        @raw_metadata = raw_metadata
-      end
 
-      def present
-        [{ presented: :metadata }]
-      end
-    end
-  end
 
   subject(:presenter) {
     SearchResultPresenter.new(document: document, metadata_presenter_class: metadata_presenter_class, doc_index: doc_index, doc_count: doc_count, finder_presenter: finder_presenter, debug_score: debug_score, highlight: highlight)
   }
+  let(:metadata_presenter_class) { MetadataPresenter }
 
   let(:title) { 'Investigation into the distribution of road fuels in parts of Scotland' }
   let(:link) { 'link-1' }
@@ -57,7 +47,6 @@ RSpec.describe SearchResultPresenter do
       summary: summary,
       is_historic: true,
       government_name: 'Government!',
-      show_metadata: true,
       format: 'cake',
       es_score: 0.005
     )
@@ -87,8 +76,8 @@ RSpec.describe SearchResultPresenter do
           }
         }
       },
-      metadata: {},
-      metadata_raw: [{ presented: :metadata }],
+      metadata: {"Case state"=>"Case state: Open"},
+      metadata_raw: [{:id=>"case-state", :label=>"Case state", :value=>"Open"}],
       subtext: nil,
       highlight: false,
       highlight_text: nil
@@ -96,40 +85,61 @@ RSpec.describe SearchResultPresenter do
   }
 
   describe "#govuk_component_data" do
+    let(:metadata_presenter_class) {
+      Class.new do
+        def initialize(_) end
+        def present
+          [
+            {id: 'case-state', label: "Case state", value: "Open"}
+          ]
+        end
+      end
+    }
     it "returns a hash" do
-      expect(subject.document_list_component_data.is_a?(Hash)).to be_truthy
+      expect(subject.document_list_component_data).to be_a(Hash)
     end
 
     it "returns a hash of the data we need to show the document" do
       hash = subject.document_list_component_data
-
       expect(hash).to eql(expected_document)
     end
   end
 
   describe "structure_metadata" do
-    it "returns nothing unless show_metadata" do
-      expect(subject.document_list_component_data[:metadata]).to eql({})
+    context 'there is no metadata in the document' do
+      let(:metadata_presenter_class) {
+        Class.new do
+          def initialize(_) end
+          def present
+            []
+          end
+        end
+      }
+      it "returns nothing" do
+        expect(presenter.document_list_component_data[:metadata]).to eql({})
+      end
     end
 
-    it "returns structured data if show_metadata is true" do
-      metadata_presenter_class.class_eval do
-        def present
-          [
-            { label: "Case state", value: "Open" },
-            { label: "Opened date", is_date: true, machine_date: "2006-07-14", human_date: "14 July 2006" },
-            { label: "Case type", hide_label: true, value: "CA98 and civil cartels" }
-          ]
+    context 'there is metadata in the document' do
+      let(:metadata_presenter_class) {
+        Class.new do
+          def initialize(_) end
+          def present
+            [
+              { label: "Case state", value: "Open" },
+              { label: "Opened date", is_date: true, machine_date: "2006-07-14", human_date: "14 July 2006" },
+              { label: "Case type", hide_label: true, value: "CA98 and civil cartels" }
+            ]
+          end
         end
+      }
+      it "returns structured data if there is metadata" do
+        expect(presenter.document_list_component_data[:metadata]).to eql(
+          "Case state" => "Case state: Open",
+          "Case type" => "<span class=\"govuk-visually-hidden\">Case type:</span> CA98 and civil cartels",
+          "Opened date" => "Opened date: <time datetime=\"2006-07-14\">14 July 2006</time>"
+        )
       end
-
-      with_metadata = SearchResultPresenter.new(document: document_with_metadata, metadata_presenter_class: metadata_presenter_class, doc_index: doc_index, doc_count: doc_count, finder_presenter: finder_presenter, debug_score: debug_score, highlight: highlight)
-
-      expect(with_metadata.document_list_component_data[:metadata]).to eql(
-        "Case state" => "Case state: Open",
-        "Case type" => "<span class=\"govuk-visually-hidden\">Case type:</span> CA98 and civil cartels",
-        "Opened date" => "Opened date: <time datetime=\"2006-07-14\">14 July 2006</time>"
-      )
     end
   end
 

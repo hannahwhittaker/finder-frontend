@@ -55,15 +55,8 @@ describe Document do
         allow(finder).to receive(:slug).and_return "/find-eu-exit-guidance-business"
       end
 
-      it "is false" do
-        expect(mainstream_document.show_metadata).to be false
-      end
-    end
-
-    context "for a finder configured to show metadata" do
-      it "is false" do
-        allow(mainstream_document).to receive(:metadata).and_return([{ key: 'val' }])
-        expect(mainstream_document.show_metadata).to be true
+      it "is empty" do
+        expect(mainstream_document.metadata).to be_empty
       end
     end
 

@@ -23,11 +23,8 @@ class Document
   end
 
   def metadata
+    return [] unless finder.display_metadata?
     raw_metadata.map(&method(:humanize_metadata_name)) + link_metadata
-  end
-
-  def show_metadata
-    metadata.present? && finder.display_metadata?
   end
 
   def path
