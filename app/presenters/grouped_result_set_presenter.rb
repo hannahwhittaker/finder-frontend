@@ -14,85 +14,85 @@ class GroupedResultSetPresenter < ResultSetPresenter
   def grouped_document_list_component_data
     return [] unless grouped_display?
 
-    documents_with_metadata = document_list_component_data.select { |document| document[:metadata_raw].present? }
-    sorted_documents = sort_by_alphabetical(documents_with_metadata)
+    documents_with_facet_data = documents.select { |document| document.facet_data.present? }
+    sorted_documents = sort_by_alphabetical(documents_with_facet_data)
 
     # Without facet filtering return all documents without grouping
-    return [{ documents: sorted_documents }] if facet_filters.values.empty?
+    return [{ documents: document_list_component_data(documents_to_convert: sorted_documents) }] if facet_filters.values.empty?
 
     # If the document is tagged to all primary facet values, and we are filtering
     # by the primary facet, then add the document to default group to prevent
     # duplication in every primary facet value grouping.
     default_documents, other_documents = sorted_documents.partition do |document|
-      selected_values_in_primary_facet.present? && tagged_to_all?(primary_facet_key, document)
+      selected_values_in_primary_facet.present? && tagged_to_all_primary_facet_values?(document)
     end
 
-    default_group = [{ group_name: "All businesses", documents: default_documents }]
+    default_group = [{ group_name: "All businesses",
+                       documents: document_list_component_data(documents_to_convert: default_documents) }]
 
     unsorted_primary_group = selected_values_in_primary_facet.map do |selected_value|
-      documents = documents_tagged_to_primary_facet_value(other_documents, selected_value)
+      primary_documents = documents_tagged_to_primary_facet_value(other_documents, selected_value)
       {
         group_name: label_for_facet_value(selected_value),
-        documents: documents
+        documents: document_list_component_data(documents_to_convert: primary_documents)
       }
     end
 
     primary_group = unsorted_primary_group.sort_by { |group| group[:group_name] }
 
     secondary_group = secondary_facets.map do |secondary_facet|
-      documents = documents_tagged_to_secondary_facet(other_documents, secondary_facet.key)
+      secondary_documents = documents_tagged_to_secondary_facet(other_documents, secondary_facet.key)
       {
-        group_name: label_from_metadata(documents.first, secondary_facet.key),
-        documents: documents
+        group_name: label_from_metadata(secondary_documents.first, secondary_facet.key),
+        documents: document_list_component_data(documents_to_convert: secondary_documents)
       }
     end
 
-    results = primary_group + secondary_group + default_group
-    results.reject { |result| result[:documents].empty? }
+    (primary_group + secondary_group + default_group).reject { |result| result[:documents].empty? }
   end
 
 private
 
   def label_from_metadata(document, key)
     return if document.nil?
-
-    metadata = document[:metadata_raw].find { |m| m[:id] == key }
-    metadata[:label]
+    datum  = document.facet_data.find { |d| d[:key] == key }
+    datum[:name]
   end
 
   def documents_tagged_to_primary_facet_value(documents, selected_value)
     documents.select do |document|
-      document[:metadata_raw].any? do |metadata|
-        metadata[:id] == primary_facet_key &&
-          metadata[:labels].include?(selected_value)
+      document.facet_data.any? do |datum|
+        datum[:key] == primary_facet_key &&
+          datum[:labels].include?(selected_value)
       end
     end
   end
 
   def documents_tagged_to_secondary_facet(documents, secondary_group_name)
     documents.select do |document|
-      document[:metadata_raw].any? { |metadata| metadata[:id] == secondary_group_name }
+      document.facet_data.any? { |datum| datum[:key] == secondary_group_name }
     end
   end
 
+  def primary_facet
+    finder_presenter.facets.first
+  end
+
   def primary_facet_key
-    finder_presenter.facets.first.key
+    primary_facet.key
   end
 
   def selected_values_in_primary_facet
     facet_filters[primary_facet_key.to_sym] || []
   end
 
-  def tagged_to_all?(facet_key, document)
-    metadata = document.dig(:metadata_raw)
-    return false unless metadata
+  def tagged_to_all_primary_facet_values?(document)
+    document_facet_data = document.facet_data
+    facet_datum = document_facet_data.find { |m| m[:key] == primary_facet_key }
+    return false unless primary_facet && facet_datum
 
-    facet = finder_presenter.facets.find { |f| f.key == facet_key }
-    facet_metadata = metadata.find { |m| m[:id] == facet_key }
-    return false unless facet && facet_metadata
-
-    values = facet.allowed_values.map { |v| v['value'] }
-    values & facet_metadata[:labels] == values
+    all_primary_facet_values = primary_facet.allowed_values.map { |v| v['value'] }
+    all_primary_facet_values & facet_datum[:labels] == all_primary_facet_values
   end
 
   def label_for_facet_value(key)
@@ -101,8 +101,8 @@ private
     allowed_value.fetch("label", '')
   end
 
-  def sort_by_alphabetical(search_results)
-    search_results.sort_by { |r| r[:link][:text] }
+  def sort_by_alphabetical(documents)
+    documents.sort_by(&:title)
   end
 
   def secondary_facets
