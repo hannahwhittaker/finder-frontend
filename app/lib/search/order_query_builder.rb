@@ -31,7 +31,7 @@ module Search
     end
 
     def public_timestamp_unsupported
-      %w(upcoming_statistics cancelled_statistics).include?(params['content_store_document_type'])
+      params['content_store_document_type'] == 'upcoming_statistics'
     end
 
     def release_timestamp_unsupported
