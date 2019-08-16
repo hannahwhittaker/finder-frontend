@@ -75,20 +75,6 @@ RSpec.describe FinderPresenter do
     it "returns the filters that are filterable" do
       expect(subject.filters).to match_array([hidden_facet, date_facet])
     end
-
-    it "returns facets with display_as_result_metadata" do
-      expect(subject.metadata).to match_array([date_facet, option_facet])
-    end
-
-    it "returns correct keys for each facet type" do
-      expect(subject.date_metadata_keys).to eq([date_facet.key])
-      expect(subject.text_metadata_keys).to match_array([option_facet.key])
-    end
-
-    it "finds the name for the key key" do
-      expect(subject.label_for_metadata_key("people")).to eql("Person")
-      expect(subject.label_for_metadata_key("public_timestamp")).to eql("Public timestamp")
-    end
   end
 
   describe 'url helpers' do
@@ -290,53 +276,6 @@ RSpec.describe FinderPresenter do
                                  "people" => %w[me you],
                                  "topic" => %w[hiding],
                                  "manual" => %w[my_manual])
-    end
-  end
-
-  context 'facets with content_ids' do
-    let(:facet_hash_1) {
-      {
-        'name' => 'Sector / Business area',
-        'key' => 'sector_business_area',
-        'allowed_values' => [
-          { 'label' => 'Aerospace', 'value' => 'aerospace', 'content_id' => '14d51311-d182-40d0-85ea-8927d8b9bc91' },
-          { 'label' => 'Agriculture', 'value' => 'agriculture', 'content_id' => 'ab38336f-09b9-4765-88f9-12c3fbebd20d' }
-        ]
-      }
-    }
-    let(:facet_hash_2) {
-      {
-        'key' => 'intellectual_property',
-        'name' => 'Intellectual property',
-        'allowed_values' => [
-          { 'label' => 'Copyright', 'value' => 'copyright', 'content_id' => '56dbec9a-1efd-4471-9f1d-51fcfd19e2db' }
-        ]
-      }
-    }
-    let(:facet1) {
-      OptionSelectFacet.new(facet_hash_1, {})
-    }
-    let(:facet2) {
-      OptionSelectFacet.new(facet_hash_2, {})
-    }
-    let(:facets) {
-      [facet1, facet2]
-    }
-
-    describe '#facet_for_content_id' do
-      it 'returns the facet for a content_id' do
-        expect(subject.facet_for_content_id('14d51311-d182-40d0-85ea-8927d8b9bc91')).to eq(facet1)
-        expect(subject.facet_for_content_id('ab38336f-09b9-4765-88f9-12c3fbebd20d')).to eq(facet1)
-        expect(subject.facet_for_content_id('56dbec9a-1efd-4471-9f1d-51fcfd19e2db')).to eq(facet2)
-      end
-    end
-
-    describe '#facet_value_lookup' do
-      it 'returns a value for content id, looking up the relation in the allowed values' do
-        expect(subject.value_for_content_id('14d51311-d182-40d0-85ea-8927d8b9bc91')).to eq('aerospace')
-        expect(subject.value_for_content_id('ab38336f-09b9-4765-88f9-12c3fbebd20d')).to eq('agriculture')
-        expect(subject.value_for_content_id('56dbec9a-1efd-4471-9f1d-51fcfd19e2db')).to eq('copyright')
-      end
     end
   end
 
