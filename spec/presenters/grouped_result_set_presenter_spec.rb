@@ -108,7 +108,7 @@ RSpec.describe GroupedResultSetPresenter do
     end
 
     def new_document(index = 1, options = {})
-      Document.new(FactoryBot.build(:document_hash, options), nil, index)
+      Document.new(FactoryBot.build(:document_hash, options), index)
     end
 
     context "Ordering is not set to topic, so there is no grouping" do
@@ -162,7 +162,7 @@ RSpec.describe GroupedResultSetPresenter do
         }
       }
       let(:document) {
-        Document.new(document_hash, finder_presenter, 1)
+        Document.new(document_hash, 1)
       }
 
       let(:filter_params) {
@@ -205,10 +205,10 @@ RSpec.describe GroupedResultSetPresenter do
         }
       }
       let(:first_document) {
-        Document.new(tagged_to_first_facet_document_hash, finder_presenter, 1)
+        Document.new(tagged_to_first_facet_document_hash, 1)
       }
       let(:second_third_document) {
-        Document.new(tagged_to_second_and_third_facet_document_hash, finder_presenter, 2)
+        Document.new(tagged_to_second_and_third_facet_document_hash, 2)
       }
 
       let(:filter_params) {
@@ -261,7 +261,7 @@ RSpec.describe GroupedResultSetPresenter do
         }
       }
       let(:document) {
-        Document.new(document_hash, finder_presenter, 1)
+        Document.new(document_hash, 1)
       }
 
       it "is grouped in the default set" do
@@ -287,7 +287,7 @@ RSpec.describe GroupedResultSetPresenter do
       }
     }
     let(:document) {
-      Document.new(document_hash, finder_presenter, 1)
+      Document.new(document_hash, 1)
     }
     subject(:grouped_display) {
       GroupedResultSetPresenter.new(finder_presenter, filter_params, sort_presenter, metadata_presenter_class).

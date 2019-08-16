@@ -63,7 +63,7 @@ RSpec.describe SearchResultPresenter do
                             es_score: 0.005,
                             content_id: 'content_id',
                             filter_key: 'filter_value')
-    Document.new(hash, finder_presenter, 1)
+    Document.new(hash, 1)
   }
 
   let(:is_historic) { false }
@@ -119,7 +119,7 @@ RSpec.describe SearchResultPresenter do
       let(:facets) { [FactoryBot.build(:date_facet, 'key' => 'filter_key')] }
       let(:document) {
         hash = FactoryBot.build(:document_hash, filter_key: '10-10-2009')
-        Document.new(hash, finder_presenter, 1)
+        Document.new(hash, 1)
       }
       it 'displays date based metadata' do
         expect(presenter.document_list_component_data[:metadata]).
