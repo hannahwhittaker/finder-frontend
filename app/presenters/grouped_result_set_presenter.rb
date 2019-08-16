@@ -8,17 +8,53 @@ class GroupedResultSetPresenter < ResultSetPresenter
     )
   end
 
+private
+
   def grouped_display?
     sorts_by_topic = sort_option.dig('key') == 'topic'
     @filter_params[:order] == "topic" || (!@filter_params.has_key?(:order) && sorts_by_topic)
   end
 
-private
+  def linked_facet_data(document)
+    return [] if document.facet_content_ids.empty?
+
+    document.facet_content_ids
+      .group_by { |content_id| facet_for_content_id(content_id) }
+      .map do |facet, content_ids|
+      labels = content_ids.map { |content_id| value_for_content_id(content_id) }
+      {
+        key: facet.key,
+        name: facet.short_name || facet.name,
+        labels: labels,
+      }
+    end
+  end
+
+  def facet_for_content_id(content_id)
+    @facet_lookup ||= begin
+      finder_presenter.facets.each_with_object({}) do |facet, result|
+        facet.allowed_values.each do |allowed_value|
+          result[allowed_value['content_id']] = facet
+        end
+      end
+    end
+    @facet_lookup[content_id]
+  end
+
+  def value_for_content_id(content_id)
+    @facet_value_lookup ||= begin
+      facet_values = finder_presenter.facets.flat_map(&:allowed_values)
+      facet_values.to_h do |val|
+        [val['content_id'], val['value']]
+      end
+    end
+    @facet_value_lookup[content_id]
+  end
 
   def grouped_documents
     return [] unless grouped_display?
 
-    documents_with_facet_data = documents.select { |document| document.linked_facet_data.present? }
+    documents_with_facet_data = documents.reject { |document| document.facet_content_ids.empty? }
     sorted_documents = sort_by_alphabetical(documents_with_facet_data)
 
     # Without facet filtering return all documents without grouping
@@ -58,13 +94,13 @@ private
   def label_from_metadata(document, key)
     return if document.nil?
 
-    datum = document.linked_facet_data.find { |d| d[:key] == key }
+    datum = linked_facet_data(document).find { |d| d[:key] == key }
     datum[:name]
   end
 
   def documents_tagged_to_primary_facet_value(documents, selected_value)
     documents.select do |document|
-      document.linked_facet_data.any? do |datum|
+      linked_facet_data(document).any? do |datum|
         datum[:key] == primary_facet_key &&
           datum[:labels].include?(selected_value)
       end
@@ -73,7 +109,7 @@ private
 
   def documents_tagged_to_secondary_facet(documents, secondary_group_name)
     documents.select do |document|
-      document.linked_facet_data.any? { |datum| datum[:key] == secondary_group_name }
+      linked_facet_data(document).any? { |datum| datum[:key] == secondary_group_name }
     end
   end
 
@@ -90,7 +126,7 @@ private
   end
 
   def tagged_to_all_primary_facet_values?(document)
-    document_facet_data = document.linked_facet_data
+    document_facet_data = linked_facet_data(document)
     facet_datum = document_facet_data.find { |m| m[:key] == primary_facet_key }
     return false unless primary_facet && facet_datum
 
