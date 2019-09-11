@@ -31,6 +31,15 @@
             type: 'search',
             value: result_set_presenter.user_supplied_keywords,
           } %>
+        <% if @suggestions.any? %>
+          <p class="govuk-body">Did you mean
+            <% @suggestions.each do |suggestion| %>
+            <a class="govuk-link govuk-!-font-weight-bold" href="<%= suggestion[:link] %>">
+            <%= suggestion[:keywords] %>
+            </a>
+          <% end %>
+          ?</p>
+          <% end %>
         </div>
       <% elsif finder_presenter.topic_finder? %>
         <%= link_to finder_presenter.topic_finder_parent['title'], finder_presenter.topic_finder_parent['base_path'], class: 'topic-finder__taxon-link' %>
