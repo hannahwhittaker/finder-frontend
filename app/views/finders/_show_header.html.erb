@@ -32,7 +32,7 @@
             value: result_set_presenter.user_supplied_keywords,
           } %>
         <% if @suggestions.any? %>
-          <p class="govuk-body">Did you mean
+          <p class="govuk-body" id="js-suggestions">Did you mean
             <% @suggestions.each do |suggestion| %>
             <a class="govuk-link govuk-!-font-weight-bold" href="<%= suggestion[:link] %>">
             <%= suggestion[:keywords] %>
