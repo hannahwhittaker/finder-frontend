@@ -38,9 +38,9 @@ module BrexitCheckerHelper
       hint_text: option.hint_text }
   end
 
-  def next_question(all_questions:, criteria_keys: [], previous_question_id: 0)
-    available_questions = all_questions[previous_question_id..] || []
-
-    available_questions.find { |question| question.show?(criteria_keys) }
+  def next_question_index(all_questions:, criteria_keys: [], previous_question_index: 0)
+    available_questions = all_questions[previous_question_index..] || []
+    next_question = available_questions.find_index { |question| question.show?(criteria_keys) }
+    next_question ? previous_question_index + next_question : nil
   end
 end

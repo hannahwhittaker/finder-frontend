@@ -58,7 +58,7 @@ describe BrexitCheckerHelper, type: :helper do
     end
   end
 
-  describe "#next_question" do
+  describe "#next_question_index" do
     let(:q1) { FactoryBot.build(:brexit_checker_question) }
     let(:q2) { FactoryBot.build(:brexit_checker_question, criteria: [{ "all_of" => %w(a b) }]) }
     let(:q3) { FactoryBot.build(:brexit_checker_question, criteria: [{ "all_of" => %w(c d) }]) }
@@ -67,10 +67,10 @@ describe BrexitCheckerHelper, type: :helper do
     let(:questions) { [q1, q2, q3, q4] }
 
     subject {
-      next_question(
+      next_question_index(
         all_questions: questions,
         criteria_keys: criteria_keys,
-        previous_question_id: previous_question_id
+        previous_question_index: previous_question_index
       )
     }
 
@@ -85,31 +85,31 @@ describe BrexitCheckerHelper, type: :helper do
     end
 
     context 'previous question id is zero' do
-      let(:previous_question_id) { 0 }
+      let(:previous_question_index) { 0 }
       let(:criteria_keys) { [] }
       it 'returns first question' do
-        expect(subject).to eq(q1)
+        expect(subject).to eq(0)
       end
     end
 
     context 'previous question id is one and the criteria matches question two' do
-      let(:previous_question_id) { 1 }
+      let(:previous_question_index) { 1 }
       let(:criteria_keys) { %w[a b] }
       it 'returns question two' do
-        expect(subject).to eq(q2)
+        expect(subject).to eq(1)
       end
     end
 
     context 'previous question id is one and the criteria matches question three' do
-      let(:previous_question_id) { 1 }
+      let(:previous_question_index) { 1 }
       let(:criteria_keys) { %w[c d] }
       it 'returns question three' do
-        expect(subject).to eq(q3)
+        expect(subject).to eq(2)
       end
     end
 
     context 'previous question id is one and the criteria does any futher questions' do
-      let(:previous_question_id) { 1 }
+      let(:previous_question_index) { 1 }
       let(:criteria_keys) { %w[e] }
       it 'does not return a question' do
         expect(subject).to be nil
@@ -117,7 +117,7 @@ describe BrexitCheckerHelper, type: :helper do
     end
 
     context 'previous question id is higher than the number of questions' do
-      let(:previous_question_id) { questions.count + 1 }
+      let(:previous_question_index) { questions.count + 1 }
       let(:criteria_keys) { [] }
       it 'does not return a question' do
         expect(subject).to be nil

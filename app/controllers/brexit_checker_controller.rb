@@ -10,11 +10,13 @@ class BrexitCheckerController < ApplicationController
 
   def show
     all_questions = BrexitChecker::Question.load_all
-    @current_question = next_question(
+    @question_index = next_question_index(
       all_questions: all_questions,
       criteria_keys: criteria_keys,
-      previous_question_id: page
+      previous_question_index: page
     )
+
+    @current_question = all_questions[@question_index]
 
     redirect_to brexit_checker_results_path(c: criteria_keys) if @current_question.nil?
   end

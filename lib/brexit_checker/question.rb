@@ -3,12 +3,12 @@ class BrexitChecker::Question
 
   CONFIG_PATH = Rails.root.join('lib', 'brexit_checker', 'questions.yaml')
 
-  validates_presence_of :key, :text, :id
+  validates_presence_of :key, :text
   validates_inclusion_of :type, in: %w(single single_wrapped multiple multiple_grouped)
   validate { errors.add("Options is not an array") unless options.is_a? Array }
 
   attr_reader :key, :text, :description, :hint_title, :hint_text,
-              :options, :type, :criteria, :id
+              :options, :type, :criteria
 
   def initialize(attrs)
     attrs.each { |key, value| instance_variable_set("@#{key}", value) }
@@ -34,9 +34,8 @@ class BrexitChecker::Question
     (options + sub_options).map(&:value).compact
   end
 
-  def self.load(id, params)
+  def self.load(params)
     parsed_params = params.dup
-    parsed_params['id'] = id
     parsed_params['text'] = params['question']
     parsed_params['options'] = Option.load_all(params['options'])
     parsed_params['type'] = params['question_type']
@@ -45,12 +44,6 @@ class BrexitChecker::Question
 
   def self.load_all
     @load_all = nil if Rails.env.development?
-    @load_all ||= YAML.load_file(CONFIG_PATH)['questions'].map.with_index { |q, i| load(i, q) }
-  end
-
-  def self.resolve(criteria_keys: [], previous_question: 0)
-    available_questions = load_all[previous_question..] || []
-
-    available_questions.find { |question| question.show?(criteria_keys) }
+    @load_all ||= YAML.load_file(CONFIG_PATH)['questions'].map { |q| load(q) }
   end
 end
