@@ -12,6 +12,7 @@
 
     this.$form = options.$form
     this.$resultsWrapper = this.$form.find('.js-live-search-results-block')
+    this.$suggestionsBlock = this.$form.find('#js-spelling-suggestions')
     this.$resultsBlock = options.$results.find('#js-results')
     this.$countBlock = options.$results.find('#js-result-count')
     this.$facetTagBlock = options.$results.find('#js-facet-tag-wrapper')
@@ -71,6 +72,7 @@
 
   LiveSearch.prototype.startEnhancedEcommerceTracking = function startEnhancedEcommerceTracking () {
     this.$resultsWrapper.attr('data-search-query', this.currentKeywords())
+    this.$suggestionsBlock.attr('data-search-query', this.currentKeywords())
     if (GOVUK.Ecommerce) { GOVUK.Ecommerce.start() }
   }
 
