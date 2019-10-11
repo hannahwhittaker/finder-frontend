@@ -1,0 +1,22 @@
+<div class="spelling-suggestions<%= ' spelling-suggestions--visible' if @suggestions.any? %>" 
+    id="js-spelling-suggestions" 
+    data-analytics-ecommerce
+    data-ecommerce-start-index="<%= result_set_presenter.start_offset %>"
+    data-list-title="<%= content_item.title %> spelling suggestions"
+    data-search-query="<%= result_set_presenter.user_supplied_keywords %>"
+    >
+    <p class="govuk-body">Did you mean 
+    <% @suggestions.each do |suggestion| %>
+        <%= link_to suggestion[:keywords], suggestion[:link],
+            class: "govuk-link govuk-!-font-weight-bold",
+            :data => {
+                :'ecommerce-content-id' => "dd395436-9b40-41f3-8157-740a453ac972",
+                :'ecommerce-row' =>"1",
+                :'track-options' => {
+                    :'dimension71' => suggestion[:keywords]
+                }
+            } 
+        %>
+    <% end %>
+    </p>
+</div>
