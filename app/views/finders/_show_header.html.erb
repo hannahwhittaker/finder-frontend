@@ -32,7 +32,15 @@
             value: result_set_presenter.user_supplied_keywords,
           } %>
         </div>
-        <%= render 'spelling_suggestions' %>
+        <div id="js-spelling-suggestions"
+          class="spelling-suggestions<%= ' spelling-suggestions--visible' if @suggestions.present? %>" 
+          data-analytics-ecommerce
+          data-ecommerce-start-index="<%= result_set_presenter.start_offset %>"
+          data-list-title="<%= content_item.title %> spelling suggestions"
+          data-search-query="<%= result_set_presenter.user_supplied_keywords %>"
+          > 
+          <%= render 'spelling_suggestions' %>
+        </div>
       <% elsif topic_finder?(filter_params) %>
         <%= link_to topic_finder_parent(filter_params)['title'], topic_finder_parent(filter_params)['base_path'], class: 'topic-finder__taxon-link' %>
         <%= render partial: 'govuk_publishing_components/components/title', locals: {
