@@ -21,6 +21,7 @@ class FindersController < ApplicationController
       end
       format.json do
         @search_query = initialize_search_query
+        @suggestions = suggestions
         if content_item.is_search? || content_item.is_finder?
           render json: json_response
         else
@@ -61,7 +62,7 @@ private
       search_results: render_component("finders/search_results", result_set_presenter.search_results_content),
       sort_options_markup: render_component("finders/sort_options", sort_presenter.to_hash),
       next_and_prev_links: render_component("govuk_publishing_components/components/previous_and_next_navigation", pagination_presenter.next_and_prev_links),
-      suggestions: suggestions,
+      suggestions: render_component("finders/spelling_suggestions", {suggestions: suggestions})
     }
   end
 
