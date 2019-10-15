@@ -329,6 +329,7 @@
       this.updateElement(this.$facetTagBlock, results.facet_tags)
       this.updateElement(this.$countBlock, results.display_total)
       this.updateElement(this.$paginationBlock, results.next_and_prev_links)
+      this.updateElement(this.$suggestionsBlock, results.suggestions)
       this.updateSortOptions(results, action)
       this.updateResultsCountMeta(results.total)
       this.$atomAutodiscoveryLink.attr('href', results.atom_url)
