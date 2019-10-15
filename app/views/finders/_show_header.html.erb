@@ -32,8 +32,7 @@
             value: result_set_presenter.user_supplied_keywords,
           } %>
         </div>
-        <div id="js-spelling-suggestions"
-          class="spelling-suggestions<%= ' spelling-suggestions--visible' if @suggestions.present? %>" 
+        <div id="js-spelling-suggestions" class="spelling-suggestions" 
           data-analytics-ecommerce
           data-ecommerce-start-index="<%= result_set_presenter.start_offset %>"
           data-list-title="<%= content_item.title %> spelling suggestions"
