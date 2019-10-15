@@ -356,7 +356,6 @@ mark {
 
 // show spelling suggestion container only if suggestions are available
 .spelling-suggestions {
-  display: none;
   margin-top: -(govuk-spacing(1));
   margin-bottom: govuk-spacing(4);
 
@@ -370,8 +369,4 @@ mark {
       font-size: 16px;
     }
   }
-}
-
-.spelling-suggestions--visible {
-  display: block;
 }
